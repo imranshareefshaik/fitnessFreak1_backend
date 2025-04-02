@@ -19,6 +19,7 @@ const workoutTrackRoutes = require('./Routes/WorkoutTrack');
 const workoutRoutes = require('./Routes/WorkoutPlans');
 const reportRoutes = require('./Routes/Report');
 
+
 require('dotenv').config();
 require('./db')
 
@@ -39,6 +40,7 @@ app.use(
 );
 
 app.use(cookieParser());
+
 
 app.use('/auth', authRoutes);
 app.use('/calorieintake', calorieIntakeRoutes);
