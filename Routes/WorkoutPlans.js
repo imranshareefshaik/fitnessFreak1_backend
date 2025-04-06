@@ -58,7 +58,7 @@ router.post('/workouts', adminTokenHandler , async (req, res) => {
         //     required: true,
         // },
 
-
+        // console.log(req.body)
         const { name, description, durationInMinutes, exercises, imageURL } = req.body;
         const workout = new Workout({
             name,

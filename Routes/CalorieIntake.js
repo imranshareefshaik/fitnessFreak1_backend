@@ -21,8 +21,71 @@ router.get('/test', authTokenHandler, async (req, res) => {
     res.json(createResponse(true, 'Test API works for calorie intake report'));
 });
 
+// router.post('/addcalorieintake', authTokenHandler, async (req, res) => {
+//     const { item, date, quantity, quantitytype } = req.body;
+
+//     // ✅ 1. Input validation
+//     if (!item || !date || !quantity || !quantitytype) {
+//         return res.status(400).json(createResponse(false, 'Please provide all the details'));
+//     }
+
+//     let qtyingrams = 0;
+//     if (quantitytype === 'g' || quantitytype === 'ml') {
+//         qtyingrams = quantity;
+//     } else if (quantitytype === 'kg' || quantitytype === 'l') {
+//         qtyingrams = quantity * 1000;
+//     } else {
+//         return res.status(400).json(createResponse(false, 'Invalid quantity type'));
+//     }
+
+//     const query = item;
+//     request.get({
+//         url: 'https://api.api-ninjas.com/v1/nutrition?query=' + query,
+//         headers: {
+//             'X-Api-Key': process.env.NUTRITION_API_KEY,
+//         },
+//     }, async function (error, response, body) {
+//         if (error) return console.error('Request failed:', error);
+//         else if (response.statusCode != 200) return console.error('Error:', response.statusCode, body.toString('utf8'));
+
+//         try {
+//             body = JSON.parse(body);
+
+//             // ✅ 2. Validate API response
+//             if (!body[0] || !body[0].calories || !body[0].serving_size_g) {
+//                 return res.status(400).json(createResponse(false, 'Invalid data from API'));
+//             }
+
+//             // ✅ 3. Calculate and check for NaN
+//             let calorieIntake = (body[0].calories / body[0].serving_size_g) * parseFloat(qtyingrams);
+//             if (isNaN(calorieIntake)) {
+//                 return res.status(400).json(createResponse(false, 'Calorie calculation failed'));
+//             }
+
+//             const userId = req.userId;
+//             const user = await User.findOne({ _id: userId });
+
+//             user.calorieIntake.push({
+//                 item,
+//                 date: new Date(date),
+//                 quantity,
+//                 quantitytype,
+//                 calorieIntake: parseInt(calorieIntake)  // ✅ Safe after check
+//             });
+
+//             await user.save();
+//             res.json(createResponse(true, 'Calorie intake added successfully'));
+//         } catch (err) {
+//             console.error('JSON parse or processing error:', err);
+//             res.status(500).json(createResponse(false, 'Internal server error'));
+//         }
+//     });
+// });
+
+
 router.post('/addcalorieintake', authTokenHandler, async (req, res) => {
     const { item, date, quantity, quantitytype } = req.body;
+
     if (!item || !date || !quantity || !quantitytype) {
         return res.status(400).json(createResponse(false, 'Please provide all the details'));
     }
@@ -116,7 +179,7 @@ router.post('/getcalorieintakebylimit', authTokenHandler, async (req, res) => {
         let currentDate = new Date(date.setDate(date.getDate() - parseInt(limit))).getTime();
         // 1678910
 
-        user.calorieIntake = user.calorieIntake.filter((item) => {
+        user.calorieIntake = user.calorieIntake.filter((entry) => {
             return new Date(item.date).getTime() >= currentDate;
         })
 
@@ -136,7 +199,8 @@ router.delete('/deletecalorieintake', authTokenHandler, async (req, res) => {
     const user = await User.findById({ _id: userId });
 
     user.calorieIntake = user.calorieIntake.filter((item) => {
-        return item.item != item && item.date != date;
+        return enrty,date.toString() !== new Date(date).toString();
+        // item.item != item && item.date != date;
     })
     await user.save();
     res.json(createResponse(true, 'Calorie intake deleted successfully'));
